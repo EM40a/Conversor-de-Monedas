@@ -1,10 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
-package com.ChallengeOne.vistas;
 
-import com.ChallengeOne.main.*;
+package com.one.challenge.vistas;
+
+import com.one.challenge.main.SeleccionDivisas;
+import com.one.challenge.main.Divisas;
+import com.one.challenge.main.Conversor;
 import javax.swing.*;
 
 /**
@@ -12,23 +11,64 @@ import javax.swing.*;
  * @author Ema
  */
 public class VistaConversor extends javax.swing.JPanel {
-    private static Divisas monedaACambiar = Divisas.monedas[0];
-    private static Divisas monedaDeCambio;
-    
-    private static String valorFinal;
+    private boolean enEjecucion = true;
+    private Divisas monedaOrigen = Divisas.monedas[0];
+    private Divisas monedaFinal;
 
     public VistaConversor() {
         initComponents();
         initStyles();
+        iniciarMetodoContinuo();
     }
-
+    
     private void initStyles(){        
         // Agrega los nombres de las monedas al combo box
-        String[] divisaNames = MostrarConversiones.Opciones();
+        String[] divisaNames = SeleccionDivisas.Opciones();
         selectDivisas.setModel(new javax.swing.DefaultComboBoxModel(divisaNames));
-
+        
         botonConvertir.putClientProperty( "JButton.buttonType", "roundRect" ); // Le da el Border al boton
         UIManager.put( "Component.arrowType", "triangle" ); // Cambia el estilo de la flecha 
+    }
+    
+    private void iniciarMetodoContinuo() {
+        Thread hiloContinuo  = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (enEjecucion) {
+                    DesactivarComboBox();   
+                    //Muestra las siglas de las monedas 
+                    labelFrom.setText(monedaOrigen.getSigla());
+                    try {
+                        labelTo.setText(monedaFinal.getSigla());
+                    } catch (NullPointerException e){
+                        labelTo.setText("");
+                    }
+
+                    try {
+                        Thread.sleep(100); // Pausa durante 1 segundo
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }                        
+                }
+
+            }
+        });
+        hiloContinuo.start();
+    }
+    
+    public void Alert(){
+        if(monedaOrigen.equals(monedaFinal) || monedaFinal == null){
+            JOptionPane.showMessageDialog(this, "Elija una moneda", "Error", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    public void DesactivarComboBox(){
+        boolean flag = true;
+
+        if (monedaOrigen.getSigla() != "ARS"){
+            flag = false;
+        }
+        selectDivisas.setEnabled(flag );
     }
     
     /**
@@ -97,9 +137,25 @@ public class VistaConversor extends javax.swing.JPanel {
         valorFrom.setText("0.00");
         valorFrom.setFont(new java.awt.Font("Roboto Medium", 0, 24)); // NOI18N
         valorFrom.setMargin(new java.awt.Insets(2, 16, 2, 16));
+        valorFrom.addAncestorListener(new javax.swing.event.AncestorListener() {
+            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
+                valorFromAncestorAdded(evt);
+            }
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
+            }
+            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
+            }
+        });
         valorFrom.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 valorFromMouseClicked(evt);
+            }
+        });
+        valorFrom.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                valorFromInputMethodTextChanged(evt);
             }
         });
         valorFrom.addActionListener(new java.awt.event.ActionListener() {
@@ -221,26 +277,15 @@ public class VistaConversor extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonConvertirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonConvertirActionPerformed
-        // TODO add your handling code here:
         //Convierte una moneda a otra y se lo setea al output
-        valorFinal = Conversor.conversion(valorFrom.getText(), monedaDeCambio);
-        valorTo.setText(valorFinal);
+        Alert();
+        String montoFinal = Conversor.convertirA(valorFrom.getText(), monedaOrigen, monedaFinal);
+        valorTo.setText(montoFinal);
     }//GEN-LAST:event_botonConvertirActionPerformed
 
     private void selectDivisasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectDivisasActionPerformed
-        // TODO add your handling code here:
-        String divisaSeleccionada = selectDivisas.getSelectedItem().toString().strip();
-        int indiceDivisa = selectDivisas.getSelectedIndex();
-        
-        for (Divisas e : Divisas.monedas){
-            if (e.equals(Divisas.monedas[indiceDivisa])){
-                monedaDeCambio = e;
-                break;
-            }
-        }
-        
-        labelFrom.setText(monedaACambiar.getSigla());
-        labelTo.setText(monedaDeCambio.getSigla());
+        int i = selectDivisas.getSelectedIndex();
+        monedaFinal = Divisas.monedas[i];
     }//GEN-LAST:event_selectDivisasActionPerformed
 
     private void valorFromActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_valorFromActionPerformed
@@ -260,17 +305,18 @@ public class VistaConversor extends javax.swing.JPanel {
     }//GEN-LAST:event_valorToActionPerformed
 
     private void alternarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_alternarActionPerformed
-        // TODO add your handling code here:
-        valorFinal = Conversor.conversion(valorFrom.getText(), monedaDeCambio);
-
-        Divisas aux = monedaDeCambio;
-        monedaDeCambio = monedaACambiar;
-        monedaACambiar = aux;
-        
-        JOptionPane.showMessageDialog(null, "Proximamente", "Alerta", JOptionPane.WARNING_MESSAGE);        
-        
+        Divisas aux = monedaFinal;
+        monedaFinal = monedaOrigen;
+        monedaOrigen = aux;
     }//GEN-LAST:event_alternarActionPerformed
 
+    private void valorFromInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_valorFromInputMethodTextChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_valorFromInputMethodTextChanged
+
+    private void valorFromAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_valorFromAncestorAdded
+    // TODO add your handling code here:
+    }//GEN-LAST:event_valorFromAncestorAdded
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton alternar;

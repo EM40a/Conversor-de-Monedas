@@ -1,16 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.ChallengeOne.main;
+
+package com.one.challenge.main;
 
 /**
  *
  * @author Ema
  */
-public class MostrarConversiones {
+public class SeleccionDivisas {
     public static String[] Opciones() {
-        
         String[] divisaNames = new String[Divisas.monedas.length];
 
         divisaNames[0] = "Seleccione una opcion:";

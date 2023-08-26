@@ -1,24 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-package com.ChallengeOne.vistas;
 
-import com.ChallengeOne.vistas.VistaConversor;
+package com.one.challenge.vistas;
+
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.BorderLayout;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 /**
  *
  * @author Ema
  */
-public class ConversorApp extends javax.swing.JFrame {
-
-    /**
-     * Creates new form Inicio
-     */
-    public ConversorApp() {
+public class MenuPrincipal extends javax.swing.JFrame {
+    public MenuPrincipal() {
         initComponents();
         initStyles();
     }
@@ -38,7 +35,7 @@ public class ConversorApp extends javax.swing.JFrame {
     }
     
     private void initStyles(){
-        BotonComenzar.putClientProperty( "JButton.buttonType", "roundRect" );
+        BotonComenzar.putClientProperty("JButton.buttonType", "roundRect" );
     }
 
     /**
@@ -57,6 +54,7 @@ public class ConversorApp extends javax.swing.JFrame {
         BotonComenzar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("menuPrincipal");
 
         content.setBackground(new java.awt.Color(48, 50, 61));
 
@@ -111,7 +109,7 @@ public class ConversorApp extends javax.swing.JFrame {
                 .addComponent(BotonComenzar, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(80, 80, 80)
                 .addComponent(ConversorDeMonedas)
-                .addGap(20, 20, 20))
+                .addGap(32, 32, 32))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -129,7 +127,7 @@ public class ConversorApp extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BotonComenzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotonComenzarActionPerformed
-        InitContent();
+        InitContent();  
     }//GEN-LAST:event_BotonComenzarActionPerformed
 
     /**
@@ -141,7 +139,8 @@ public class ConversorApp extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                ConversorApp inicio = new ConversorApp();               
+                MenuPrincipal inicio = new MenuPrincipal();        
+                inicio.setTitle("Conversor de Monedas");
                 inicio.setVisible(true);
                 inicio.setResizable(false); // Bloquear la maximización
             }
